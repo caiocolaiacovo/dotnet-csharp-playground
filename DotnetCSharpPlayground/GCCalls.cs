@@ -7,14 +7,6 @@ using BenchmarkDotNet.Attributes;
 [MemoryDiagnoser(displayGenColumns: true)] // Enables GC and Allocation tracking
 public class GCCalls
 {
-    // [Benchmark]
-    public void AllocateMemory()
-    {
-        var list = new List<int>();
-        for (int i = 0; i < 1000; i++)
-            list.Add(i);
-    }
-
     [Benchmark]
     public void ParseLargeFiles()
     {
@@ -27,7 +19,9 @@ public class GCCalls
         // File format:
         // userId,movieId,rating,timestamp
         // 1,17,4.0,944249077
-        Run3("/home/caio/Downloads/ml-32m/ratings.csv");
+        // Run1();
+        // Run2();
+        Run3();
 
         stopwatch.Stop();
         Console.WriteLine($"Time taken: {stopwatch.Elapsed.TotalSeconds} seconds");
@@ -47,9 +41,11 @@ public class GCCalls
         Heap size: 2828,358413696289 MB
         Total memory: 3081,16015625 MB
     */
-    public static void Run1(string filePath)
+    [Benchmark]
+    public void Run1()
     {
-        var lines = File.ReadAllLines(filePath);
+        Console.WriteLine("Run1 -> naive solution");
+        var lines = File.ReadAllLines("/home/caio/Downloads/ml-32m/ratings.csv");
         var sum = 0d;
         var count = 0;
 
@@ -75,12 +71,15 @@ public class GCCalls
         Heap size: 13,130088806152344 MB
         Total memory: 53,671875 MB
     */
-    public static void Run2(string filePath)
+    [Benchmark]
+    public void Run2()
     {
+        Console.WriteLine("Run2 -> streaming solution (best solution?)");
+
         var sum = 0d;
         var count = 0;
 
-        using var fs = File.OpenRead(filePath);
+        using var fs = File.OpenRead("/home/caio/Downloads/ml-32m/ratings.csv");
         using var sr = new StreamReader(fs);
 
         string? line;
@@ -106,15 +105,18 @@ public class GCCalls
         Heap size: 1,8041839599609375 MB
         Total memory: 53,33203125 MB
     */
-    public static void Run3(string filePath)
+    [Benchmark]
+    public void Run3()
     {
+        Console.WriteLine("Run3 -> span-based solution");
+
         var sum = 0d;
         var count = 0;
         string? line;
 
         var lookingForMovieId = "110".AsSpan(); // Using Span to avoid allocations
 
-        using var fs = File.OpenRead(filePath);
+        using var fs = File.OpenRead("/home/caio/Downloads/ml-32m/ratings.csv");
         using var sr = new StreamReader(fs);
         while ((line = sr.ReadLine()) != null)
         {
