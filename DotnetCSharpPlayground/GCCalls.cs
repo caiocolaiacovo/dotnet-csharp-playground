@@ -45,7 +45,7 @@ public class GCCalls
     public void Run1()
     {
         Console.WriteLine("Run1 -> naive solution");
-        var lines = File.ReadAllLines("/home/caio/Downloads/ml-32m/ratings.csv");
+        var lines = File.ReadAllLines("ratings.csv");
         var sum = 0d;
         var count = 0;
 
@@ -79,7 +79,7 @@ public class GCCalls
         var sum = 0d;
         var count = 0;
 
-        using var fs = File.OpenRead("/home/caio/Downloads/ml-32m/ratings.csv");
+        using var fs = File.OpenRead("ratings.csv");
         using var sr = new StreamReader(fs);
 
         string? line;
@@ -116,7 +116,7 @@ public class GCCalls
 
         var lookingForMovieId = "110".AsSpan(); // Using Span to avoid allocations
 
-        using var fs = File.OpenRead("/home/caio/Downloads/ml-32m/ratings.csv");
+        using var fs = File.OpenRead("ratings.csv");
         using var sr = new StreamReader(fs);
         while ((line = sr.ReadLine()) != null)
         {
